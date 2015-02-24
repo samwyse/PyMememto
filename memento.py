@@ -208,6 +208,47 @@ native and by-proxy support of the Memento protocol.
     timegate_template = 'http://timetravel.mementoweb.org/timegate/%s'
     timemap_template = 'http://timetravel.mementoweb.org/timemap/link/%s'
 
+class ArchiveToday(Memento):
+    timegate_template = "http://archive.today/timegate/%s"
+    timemap_template = "http://archive.today/timemap/%s"
+
+class ArchiveIt(Memento):
+    timegate_template = "http://wayback.archive-it.org/all/%s"
+    timemap_template = "http://wayback.archive-it.org/all/timemap/link/%s"
+
+class Dbpedia(Memento):
+    timegate_template = "http://dbpedia.mementodepot.org/timegate/document/%s"
+    timemap_template = "http://dbpedia.mementodepot.org/timemap/link/%s"
+
+class Icelandic(Memento):
+    timegate_template = "http://wayback.vefsafn.is/wayback/%s"
+    timemap_template = "http://wayback.vefsafn.is/wayback/timemap/link/%s"
+
+class IA(Memento):
+    timegate_template = "http://web.archive.org/web/%s"
+    timemap_template = "http://web.archive.org/web/timemap/link/%s"
+
+class Proni(Memento):
+    timegate_template = "http://webarchive.proni.gov.uk/timegate/%s"
+    timemap_template = "http://webarchive.proni.gov.uk/timemap/%s"
+
+class StanfordWebArchive(Memento):
+    timegate_template = "https://swap.stanford.edu/%s"
+    timemap_template = "https://swap.stanford.edu/timemap/link/%s"
+
+class UKNationalArchives(Memento):
+    timegate_template = "http://webarchive.nationalarchives.gov.uk/timegate/%s"
+    timemap_template = "http://webarchive.nationalarchives.gov.uk/timemap/%s"
+
+class UKParliament(Memento):
+    timegate_template = "http://webarchive.parliament.uk/timegate/%s"
+    timemap_template = "http://webarchive.parliament.uk/timemap/%s"
+
+class Blarchive(Memento):
+    timegate_template = "http://www.webarchive.org.uk/wayback/archive/%s"
+    timemap_template = "http://www.webarchive.org.uk/wayback/archive/timemap/link/%s"
+
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
