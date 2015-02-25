@@ -10,26 +10,10 @@ else:
     from urllib2 import urlopen
     from HTMLParser import HTMLParser
 
+
 last_component_re = re.compile(r'\/(\w+)\/?$')
 example_url_re = re.compile(r'(.*\/)http\:\/\/.*')
 yyyymmdd_re = re.compile(r'\/[12][90]\d\d\d\d\d\d')
-
-class_def_prolog = '''\
-"""
-doc string
-"""
-
-from memento import Memento, register_as'''
-
-class_def_template = '''
-
-@register_as(%(group)r)
-class %(title)s(Memento):
-    """
-%(flavor)s
->>> obj = %(title)s().get_timegate(for_uri='http://www.w3.org/TR/webarch/')
->>> obj.first
-"""'''
 
 
 class ArchivePageParser(HTMLParser):
@@ -70,8 +54,10 @@ class ArchivePageParser(HTMLParser):
         if self.state == 9:
             self.flavor.append(data)
 
+
 class IndexPageParser(HTMLParser):
-    def __init__(self):
+    def __init__(self, code_generator):
+        self.code_generator = code_generator
         self.state = 0
         if PY3:
             super().__init__()
@@ -86,35 +72,82 @@ class IndexPageParser(HTMLParser):
             href = dict(attrs)['href']
             match = last_component_re.search(href)
             if match:
-                http_response = urlopen(href)
-                archive_parser = ArchivePageParser()
-                if PY3:
-                    buffer = str(http_response.read(), 'utf-8')
-                else:
-                    buffer = http_response.read()
-                archive_parser.feed(buffer)
-                if archive_parser.examples:
-                    print(class_def_template % {
-    'flavor': ''.join(s.lstrip() for s in archive_parser.flavor[1:]),
-    'group': match.group(1),
-    'title': match.group(1).title(),
-    })
-                    for example in archive_parser.examples:
-                        if yyyymmdd_re.search(example):
-                            continue
-                        var = 'timemap' if 'timemap' in example else 'timegate'
-                        print('    %s_template = %r' % (var, example + '%s'))
+                self.code_generator.class_def(match)
     def handle_endtag(self, tag):
         if tag == 'ul' and self.state == 1:
             self.state = 0
         if tag == 'li' and self.state == 2:
             self.state = 1
 
+
+class CodeGen(object):
+    '''Put all code generation in one place.'''
+
+    def __init__(self, fname):
+        self.file = open(fname + '.py', mode='w')
+
+    def print(self, *args, **kwds):
+        kwds['file'] = self.file
+        print(*args, **kwds)
+
+    def prolog(self):
+        self.print('''\
+## Automatically generated code.
+
+"""
+doc string
+"""
+
+from memento import Memento, register_as
+''')
+
+    def epilog(self):
+        self.print('''
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+''')
+        self.file.flush()
+
+    class_def_template = '''
+@register_as(%(group)r)
+class %(title)s(Memento):
+    """
+%(flavor)s
+>>> obj = %(title)s().get_timegate(for_uri='http://www.w3.org/TR/webarch/')
+>>> obj.first
+"""'''
+              
+    def class_def(self, match):
+        http_response = urlopen(match.string)
+        archive_parser = ArchivePageParser()
+        if PY3:
+            buffer = str(http_response.read(), 'utf-8')
+        else:
+            buffer = http_response.read()
+        archive_parser.feed(buffer)
+        if archive_parser.examples:
+            self.print(self.class_def_template % {
+                'flavor': ''.join(s.lstrip() for s in archive_parser.flavor[1:]),
+                'group': match.group(1),
+                'title': match.group(1).title(),
+                })
+            for example in archive_parser.examples:
+                if yyyymmdd_re.search(example):
+                    continue
+                var = 'timemap' if 'timemap' in example else 'timegate'
+                self.print('    %s_template = %r' % (var, example + '%s'))
+
+
+code_gen = CodeGen('archives')
+code_gen.prolog()
+
 depot = urlopen('http://mementoweb.org/depot/')
-print(class_def_prolog)
-index_parser = IndexPageParser()
+index_parser = IndexPageParser(code_gen)
 if PY3:
     buffer = str(depot.read(), 'utf-8')
 else:
     buffer = depot.read()
 index_parser.feed(buffer)
+
+code_gen.epilog()

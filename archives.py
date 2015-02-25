@@ -1,3 +1,5 @@
+## Automatically generated code.
+
 """
 doc string
 """
@@ -17,7 +19,6 @@ archive.today is "your personal Wayback Machine". For information,
     timegate_template = u'http://archive.today/timegate/%s'
     timemap_template = u'http://archive.today/timemap/%s'
 
-
 @register_as('archiveit')
 class Archiveit(Memento):
     """
@@ -29,7 +30,6 @@ Archive-It is a subscription-based web, on-demand archive affiliated with the In
 """
     timegate_template = u'http://wayback.archive-it.org/all/%s'
     timemap_template = u'http://wayback.archive-it.org/all/timemap/link/%s'
-
 
 @register_as('dbpedia')
 class Dbpedia(Memento):
@@ -45,7 +45,6 @@ This archive contains prior versions of DBpedia. It is
     timegate_template = u'http://dbpedia.mementodepot.org/timegate/document/%s'
     timemap_template = u'http://dbpedia.mementodepot.org/timemap/link/%s'
 
-
 @register_as('icelandic')
 class Icelandic(Memento):
     """
@@ -56,7 +55,6 @@ For information about the Icelandic Web Archive, see http://vefsafn.is/index.php
 """
     timegate_template = u'http://wayback.vefsafn.is/wayback/%s'
     timemap_template = u'http://wayback.vefsafn.is/wayback/timemap/link/%s'
-
 
 @register_as('ia')
 class Ia(Memento):
@@ -69,7 +67,6 @@ The Internet Archive is the largest public web archive. It contains billions of 
 """
     timegate_template = u'http://web.archive.org/web/%s'
     timemap_template = u'http://web.archive.org/web/timemap/link/%s'
-
 
 @register_as('proni')
 class Proni(Memento):
@@ -85,7 +82,6 @@ The PRONI Web Archive is made available by the Public Record Office of Northern 
     timegate_template = u'http://webarchive.proni.gov.uk/timegate/%s'
     timemap_template = u'http://webarchive.proni.gov.uk/timemap/%s'
 
-
 @register_as('stanfordwebarchive')
 class Stanfordwebarchive(Memento):
     """
@@ -100,7 +96,6 @@ The Stanford Web Archive is provided by Stanford University Libraries.
     timegate_template = u'https://swap.stanford.edu/%s'
     timemap_template = u'https://swap.stanford.edu/timemap/link/%s'
 
-
 @register_as('uknationalarchives')
 class Uknationalarchives(Memento):
     """
@@ -113,7 +108,6 @@ The UK Government Web Archive is made available by the UK National Archivesand c
 """
     timegate_template = u'http://webarchive.nationalarchives.gov.uk/timegate/%s'
     timemap_template = u'http://webarchive.nationalarchives.gov.uk/timemap/%s'
-
 
 @register_as('ukparliament')
 class Ukparliament(Memento):
@@ -128,7 +122,6 @@ The UK Parliament's Web Archive
     timegate_template = u'http://webarchive.parliament.uk/timegate/%s'
     timemap_template = u'http://webarchive.parliament.uk/timemap/%s'
 
-
 @register_as('blarchive')
 class Blarchive(Memento):
     """
@@ -142,3 +135,8 @@ The UK Web Archive is made available by the British Libraryand contains websites
 """
     timegate_template = u'http://www.webarchive.org.uk/wayback/archive/%s'
     timemap_template = u'http://www.webarchive.org.uk/wayback/archive/timemap/link/%s'
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
