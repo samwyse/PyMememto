@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re, sys
+from textwrap import fill
 
 PY3 = sys.version_info >= (3,)
 if PY3:
@@ -12,7 +13,7 @@ else:
 
 
 last_component_re = re.compile(r'\/(\w+)\/?$')
-example_url_re = re.compile(r'(.*\/)http\:\/\/.*')
+example_url_re = re.compile(r'(https?\:\/\/.*\/)(https?\:\/\/.*)')
 yyyymmdd_re = re.compile(r'\/[12][90]\d\d\d\d\d\d')
 
 
@@ -50,7 +51,7 @@ class ArchivePageParser(HTMLParser):
         if self.state == 3:
             match = example_url_re.match(data)
             if match:
-                self.examples.append(match.group(1))
+                self.examples.append(match.group(1, 2))
         if self.state == 9:
             self.flavor.append(data)
 
@@ -85,6 +86,7 @@ class CodeGen(object):
 
     def __init__(self, fname):
         self.file = open(fname + '.py', mode='w')
+        self.exports = []
 
     def print(self, *args, **kwds):
         kwds['file'] = self.file
@@ -92,7 +94,7 @@ class CodeGen(object):
 
     def prolog(self):
         self.print('''\
-## Automatically generated code.
+## Auto-generated code.
 
 """
 doc string
@@ -114,7 +116,8 @@ if __name__ == "__main__":
 class %(title)s(Memento):
     """
 %(flavor)s
->>> obj = %(title)s().get_timegate(for_uri='http://www.w3.org/TR/webarch/')
+
+>>> obj = %(title)s().get_timegate(for_uri='%(for_uri)s')
 >>> obj.first
 """'''
               
@@ -127,16 +130,26 @@ class %(title)s(Memento):
             buffer = http_response.read()
         archive_parser.feed(buffer)
         if archive_parser.examples:
+            flavor = ''.join(s for s in archive_parser.flavor[1:]).strip()
+            flavor = re.compile(r'\s+').sub(' ', flavor)
+            group = match.group(1)
+            title = group.title()
+            self.exports.append(title)
+            for_uri = 'http://example.org/example'
+            for example in archive_parser.examples:
+                if len(example) > 1:
+                    for_uri = example[1]
             self.print(self.class_def_template % {
-                'flavor': ''.join(s.lstrip() for s in archive_parser.flavor[1:]),
-                'group': match.group(1),
-                'title': match.group(1).title(),
+                'flavor': fill(flavor),
+                'group': group,
+                'title': title,
+                'for_uri': for_uri,
                 })
             for example in archive_parser.examples:
-                if yyyymmdd_re.search(example):
+                if yyyymmdd_re.search(example[0]):
                     continue
-                var = 'timemap' if 'timemap' in example else 'timegate'
-                self.print('    %s_template = %r' % (var, example + '%s'))
+                var = 'timemap' if 'timemap' in example[0] else 'timegate'
+                self.print('    %s_template = %r' % (var, example[0] + '%s'))
 
 
 code_gen = CodeGen('archives')
