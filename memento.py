@@ -1,4 +1,22 @@
-'''Access an RFC 7089 web archive.
+'''This package exports the Memento class, used to access an RFC 7089
+compliant web archive.  It can be used as is, but it may be more
+convenient to use the subclasses found in the archives package.
+
+A registry is also provided to allow access to archives without having
+to know all the technical details.  The register_memento function
+registers a class, lookup_memento returns a class based on the
+registered name.
+
+The interfaces in this package should be considered experimental.
+
+This code should work with either Python 2.7 or 3.x.
+
+TODO: Improve package documentation.
+
+TODO: Add more doctests.
+
+TODO: Implement resource type detection heuristics, as specified in
+http://mementoweb.org/guide/resourcetype/
 
 Copyright 2015 by Sam Denton, samwyse@gmail.com
 '''
